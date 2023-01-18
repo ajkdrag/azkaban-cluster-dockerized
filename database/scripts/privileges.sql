@@ -1,0 +1,3 @@
+CREATE USER 'azkaban'@'%' IDENTIFIED BY 'azkaban';
+GRANT ALL PRIVILEGES ON azkaban.* TO 'azkaban'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;

@@ -1,0 +1,31 @@
+version: '3.1'
+services:
+  db:
+    image: azkaban-db:latest 
+    healthcheck:
+      test: >
+        mysql -e '\q' -u root -proot > /dev/null || exit 1
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    ports:
+      - "3306:3306"
+    networks:
+      - azkaban
+  web:
+    image: web-server:latest
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - 'sed -i "s/mysql.host=localhost/mysql.host=db"/ conf/azkaban.properties;
+         bin/start-web-server.sh'
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - azkaban
+networks:
+  azkaban:
+    driver: bridge
