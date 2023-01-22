@@ -4,9 +4,9 @@ services:
     image: azkaban-db:latest 
     healthcheck:
       test: >
-        mysql -e '\q' -u root -proot > /dev/null || exit 1
-      interval: 5s
-      timeout: 2s
+        if [[ $(mysql -u azkaban -pazkaban azkaban -se "select count(*) from executors where active=1;") = 0 ]]; then exit 1; fi
+      interval: 30s
+      timeout: 20s
       retries: 5
     ports:
       - "3306:3306"
@@ -14,11 +14,6 @@ services:
       - azkaban
   web:
     image: web-server:latest
-    entrypoint:
-      - "/bin/sh"
-      - "-c"
-      - 'sed -i "s/mysql.host=localhost/mysql.host=db"/ conf/azkaban.properties;
-         bin/start-web-server.sh'
     ports:
       - "8081:8081"
     depends_on:
@@ -26,6 +21,47 @@ services:
         condition: service_healthy
     networks:
       - azkaban
+  minio:
+    image: minio/minio
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    command: server --console-address ":9001" /data
+    networks:
+      - azkaban
+    volumes:
+      - minio_storage:/data
+  mc:
+    image: minio/mc
+    restart: on-failure
+    environment:
+      BUCKET: ${ML_BUCKET}
+      AWS_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_PWD: ${AWS_SECRET_ACCESS_KEY}
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - "/usr/bin/mc alias set myminio http://minio:9000 $${AWS_ID} $${AWS_PWD};
+        /usr/bin/mc mb --ignore-existing myminio/$${BUCKET};
+        /usr/bin/mc policy set public myminio/$${BUCKET};"
+    networks:
+      - azkaban
+    depends_on:
+      - minio
 networks:
   azkaban:
     driver: bridge
+volumes:
+  minio_storage:
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/minio
+      o: bind 
