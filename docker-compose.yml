@@ -56,6 +56,19 @@ services:
       - azkaban
     depends_on:
       - minio
+  jupyter:
+    image: jupyter/datascience-notebook
+    user: root
+    ports:
+      - "8888:8888"
+    env_file:
+      - ${ENVIRONMENT}.env 
+    environment:
+      GRANT_SUDO: yes
+    networks:
+      - azkaban
+    volumes:
+      - notebook_storage:/home/jovyan/work
 networks:
   azkaban:
     driver: bridge
@@ -64,4 +77,9 @@ volumes:
     driver_opts:
       type: none
       device: ${PWD}/volumes/minio
-      o: bind 
+      o: bind
+  notebook_storage:
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/notebooks
+      o: bind

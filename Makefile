@@ -9,12 +9,16 @@ stop_db:
 	${compose_down} db
 stop_backend:
 	${compose_down} db minio
+stop_jupyter:
+	${compose_down} jupyter
 start_db:
 	${compose_up} db 
 start_backend:
 	${compose_up} db minio mc
 start_web:
 	${compose_up} web 
+start_jupyter:
+	${compose_up} jupyter
 start_all:
 	${compose_up} 
 upload_data:
