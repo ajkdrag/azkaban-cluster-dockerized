@@ -22,7 +22,13 @@ RUN curl -L -O https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-j-8.
     rm lib/mysql-connector*.jar; \
     cp mysql-connector-j-8.0.31/mysql-connector*.jar lib/
 
-RUN echo '$(dirname $0)'"/internal/internal-start-executor.sh "'"$@"'" > exec_server_log.out; tail -f exec_server_log.out" > bin/start-exec-server.sh
+RUN echo '$(dirname $0)'"/internal/internal-start-executor.sh " \
+            '"$@"' \
+            " > exec_server_log.out; " \
+            "sleep 5 && curl -G " \
+            '"localhost:46050/executor?action=activate"' \
+            " && echo;" \
+            "tail -f exec_server_log.out" > bin/start-exec-server.sh
 
 COPY conf/azkaban.properties conf/azkaban.properties
 COPY conf/commonprivate.properties plugins/jobtypes/commonprivate.properties
