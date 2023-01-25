@@ -1,31 +1,29 @@
 SHELL=/bin/bash
-environment=dev
-compose_up=docker compose --env-file ${environment}.env up -d --build
-compose_down=docker compose --env-file ${environment}.env rm -fsv
 
-stop_web:
-	${compose_down} web
-stop_db:
-	${compose_down} db
-stop_backend:
-	${compose_down} db minio
-stop_jupyter:
-	${compose_down} jupyter
-start_db:
-	${compose_up} db 
-start_backend:
-	${compose_up} db minio mc
-start_web:
-	${compose_up} web 
-start_jupyter:
-	${compose_up} jupyter
-start_all:
-	${compose_up} 
+dir_services=services
+dir_code=code
+dir_orchestration=orchestration
+compose_up=docker compose -f ${dir_services}/docker-compose.yml --env-file .env up -d --build
+compose_down=docker compose --project-directory ${dir_services} --env-file .env rm -fsv
+services?=jupyter
+
+start:
+	${compose_up} ${services}
+stop:
+	${compose_down} ${services}
+stop_azk:
+	${compose_down} db web
+start_azk:
+	${compose_up} db web
 upload_data:
 	set -o allexport; \
-	source ${environment}.env; \
+	source .env; \
 	set +o allexport; \
+	python3 -m venv env; \
 	source env/bin/activate; \
-	pip install -r requirements.txt; \
-	python scripts/create_dataset_in_s3.py; \
-	deactivate
+	python3 -m pip install -qr requirements.txt; \
+	python3 scripts/create_dataset_in_s3.py; \
+	deactivate; \
+	rm -rf env
+upload_code:
+	echo "To package code and upload to pypi"

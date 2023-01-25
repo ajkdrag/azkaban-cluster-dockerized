@@ -19,17 +19,17 @@ def upload_to_s3(url, bucket_obj, key):
 
 
 if __name__=="__main__":
-    env = os.environ["ENVIRONMENT"]
-    target_key = os.environ["DATASET_RAW"]
+    env = os.environ.get("ENVIRONMENT", "dev")
+    target_key = os.environ.get("DATASET_RAW", "data/raw/dataset.file")
+    endpoint = os.environ.get("S3_ENDPOINT", "http://localhost:9000")
 
     bucket_obj = get_bucket_obj(
                     name=env,
                     aws_session_token=None,
                     config=boto3.session.Config(signature_version='s3v4'),
-                    endpoint_url="http://192.168.48.3:9000",
+                    endpoint_url=endpoint,
                     verify=False
                 )
-
+    
     upload_to_s3(os.environ["DATASET_URL"], bucket_obj, target_key)
     print(f"Uploaded dataset to: {target_key}")
-

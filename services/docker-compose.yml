@@ -61,14 +61,24 @@ services:
     user: root
     ports:
       - "8888:8888"
-    env_file:
-      - ${ENVIRONMENT}.env 
     environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
       GRANT_SUDO: yes
     networks:
       - azkaban
     volumes:
       - notebook_storage:/home/jovyan/work
+  pypi:
+    image: pypiserver/pypiserver:latest
+    ports:
+      - "8080:8080"
+    command: -P . -a . /data/packages
+    networks:
+      - azkaban
+    volumes:
+      - pypi_storage:/data/packages
 networks:
   azkaban:
     driver: bridge
@@ -82,4 +92,9 @@ volumes:
     driver_opts:
       type: none
       device: ${PWD}/volumes/notebooks
+      o: bind
+  pypi_storage:
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/packages
       o: bind
