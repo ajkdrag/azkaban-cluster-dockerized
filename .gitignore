@@ -2,3 +2,5 @@ env/
 *.zip
 __pycache__/
 volumes/
+dist/
+*.egg-info
