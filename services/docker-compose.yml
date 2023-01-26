@@ -74,7 +74,7 @@ services:
     image: pypiserver/pypiserver:latest
     ports:
       - "8080:8080"
-    command: -P . -a . /data/packages
+    command: -P . -a . -o /data/packages
     networks:
       - azkaban
     volumes:
