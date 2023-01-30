@@ -59,17 +59,22 @@ services:
   jupyter:
     image: jupyter/datascience-notebook
     user: root
+    working_dir: "/home/ajkdrag"
     ports:
       - "8888:8888"
     environment:
+      NB_USER: ajkdrag
+      NB_UID: 1234
+      NB_GID: 1234
+      CHOWN_HOME: "yes"
+      CHOWN_HOME_OPTS: "-R"
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
-      GRANT_SUDO: yes
     networks:
       - azkaban
     volumes:
-      - notebook_storage:/home/jovyan/work
+      - notebook_storage:/home/ajkdrag/work
   pypi:
     image: pypiserver/pypiserver:latest
     ports:

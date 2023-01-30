@@ -44,3 +44,8 @@ upload_code: clean_build
 	twine upload --repository-url http://${pypi_host}:8080 dist/*.whl; \
 	deactivate; \
 	rm -rf env
+run_preproc:
+	set -o allexport; \
+	source .env; \
+	set +o allexport; \
+	spam_preprocessor -c ../mlcode/configs/train_s3.yaml -t

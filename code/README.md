@@ -1,7 +1,2 @@
-## Dummy Project
-A dummy project to test with Azkaban
-
-Here are a few points:
-
-- This dummy project will be removed post testing.
-- A proper ML beginner codebase will be placed instead.
+## Spam detection with Naive Bayes 
+A toy ML project that uses the **Naive Bayes algorithm** to create a model that can classify SMS messages as spam or not spam,

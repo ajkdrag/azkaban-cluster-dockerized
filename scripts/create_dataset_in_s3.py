@@ -1,6 +1,8 @@
+import io
 import os
 import boto3
 import requests
+import zipfile
 
 
 def get_bucket_obj(name, **kwargs):
@@ -15,21 +17,23 @@ def get_bucket_obj(name, **kwargs):
 
 def upload_to_s3(url, bucket_obj, key):
     data = requests.get(url, stream=True)
-    bucket_obj.upload_fileobj(data.raw, key)
+    z = zipfile.ZipFile(io.BytesIO(data.content))
+    contents = z.read("SMSSpamCollection")
+    bucket_obj.upload_fileobj(io.BytesIO(contents), key)
 
 
 if __name__=="__main__":
-    env = os.environ.get("ENVIRONMENT", "dev")
-    target_key = os.environ.get("DATASET_RAW", "data/raw/dataset.file")
-    endpoint = os.environ.get("S3_ENDPOINT", "http://localhost:9000")
+    env = os.environ["ENVIRONMENT"]
+    target_key = os.environ["DATASET_TRAIN"]
 
     bucket_obj = get_bucket_obj(
                     name=env,
                     aws_session_token=None,
                     config=boto3.session.Config(signature_version='s3v4'),
-                    endpoint_url=endpoint,
+                    endpoint_url="http://localhost:9000",
                     verify=False
                 )
-    
+
     upload_to_s3(os.environ["DATASET_URL"], bucket_obj, target_key)
     print(f"Uploaded dataset to: {target_key}")
+
