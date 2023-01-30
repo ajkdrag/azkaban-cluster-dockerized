@@ -1,12 +1,15 @@
 import io
+import os
 import yaml
+import uuid
 import joblib
 import pandas as pd
 import utils.s3_utils as s3_utils
+from pathlib import Path
 
 
 def generate_runid():
-    return "xyz"
+    return str(uuid.uuid4())
 
 
 def read_yaml(yaml_path):
