@@ -49,3 +49,8 @@ run_preproc:
 	source .env; \
 	set +o allexport; \
 	spam_preprocessor -c ../mlcode/configs/train_s3.yaml -t
+run_train:
+	set -o allexport; \
+	source .env; \
+	set +o allexport; \
+	spam_train -p 8a143ad9-c50d-4e4e-a4ce-ad4b3afc463f -c ../mlcode/configs/train_s3.yaml

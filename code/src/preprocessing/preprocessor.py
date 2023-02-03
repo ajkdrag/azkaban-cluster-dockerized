@@ -2,7 +2,6 @@ import os
 import click
 import logging
 import joblib
-import pathlib
 import utils.logger as logger
 import utils.general as general
 import pandas as pd
@@ -45,8 +44,8 @@ def load_dataset(config_data):
         
 
 @click.command()
-@click.option("-r", "--runid", default="", help="Optional run id to pass")
-@click.option("-c", "--config", required=True, help="Path to the config file")
+@click.option("-r", "--runid", default="", help="Optional run id.")
+@click.option("-c", "--config", required=True, help="Path to the config file.")
 @click.option("-t", "--train", is_flag=True, help="Train or Infer")
 def run(runid, config, train):
     global LOG
@@ -92,6 +91,5 @@ def run(runid, config, train):
                        os.path.join(output_prefix, "preprocessed.csv"),
                        "csv"))
 
-    pathlib.Path(output_prefix).mkdir(parents=True, exist_ok=True)
     general.generic_write(write_list)
     LOG.info("%s Finished Preprocessing %s", "*"*10, "*"*10)

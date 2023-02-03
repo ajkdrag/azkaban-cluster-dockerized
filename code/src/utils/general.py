@@ -42,6 +42,7 @@ def read_pkl(pkl_path):
 
 def write_pkl(obj, filepath):
     localpath = Path(filepath).name if filepath.startswith("s3") else filepath
+    Path(localpath).parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(obj, localpath)
     if filepath.startswith("s3"):
         s3_utils.upload_file(localpath, filepath)
@@ -50,6 +51,7 @@ def write_pkl(obj, filepath):
 
 def write_csv(df, filepath):
     localpath = Path(filepath).name if filepath.startswith("s3") else filepath
+    Path(localpath).parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(localpath, index=False)
     if filepath.startswith("s3"):
         s3_utils.upload_file(localpath, filepath)
