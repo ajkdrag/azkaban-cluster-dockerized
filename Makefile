@@ -53,4 +53,9 @@ run_train:
 	set -o allexport; \
 	source .env; \
 	set +o allexport; \
-	spam_train -p 8a143ad9-c50d-4e4e-a4ce-ad4b3afc463f -c ../mlcode/configs/train_s3.yaml
+	spam_train -p ea7c7324-50a9-4c2d-9026-bbb603b1a5da -c ../mlcode/configs/train_s3.yaml
+run_inference:
+	set -o allexport; \
+	source .env; \
+	set +o allexport; \
+	spam_infer -c ../mlcode/configs/train_s3.yaml -s "URGENT! Take this 100000 cash prize RIGHT NOW!!!"

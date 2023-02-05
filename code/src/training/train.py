@@ -41,9 +41,19 @@ def get_feats_and_labels(config_data, df):
     return X, y
 
 
-def create_model(config_data):
+def create_model():
     naive_bayes = MultinomialNB()
     return naive_bayes
+
+
+def load_model(config_data):
+    registry_path = config_data["registry_path"]
+    registry_df = general.read_csv(registry_path)
+    latest_train_runid = registry_df.iloc[-1]["train_runid"]
+    train_artifact_path = os.path.join(config_data["train_prefix"],
+                                         latest_train_runid,
+                                         "model.pkl")
+    return general.read_pkl(train_artifact_path)
 
 
 def get_metrics(y, predictions):
@@ -62,7 +72,7 @@ def update_registry(config_data, preproc_runid, train_runid):
     entry_df = pd.DataFrame([{
         "moment": str(datetime.now()),
         "preproc_runid": preproc_runid,
-        "trian_runid": train_runid,
+        "train_runid": train_runid,
     }])
     try:
         registry_df = general.read_csv(registry_path)
@@ -81,7 +91,7 @@ def run(runid, preproc_runid, config):
     global LOG
     setup_logging()
     LOG = logging.getLogger(__name__)
-    LOG.info("%s Starting Preprocessing %s", "*"*10, "*"*10)
+    LOG.info("%s Starting Training %s", "*"*10, "*"*10)
 
     config_data = general.read_yaml(config)
     LOG.info(config_data)
@@ -89,7 +99,7 @@ def run(runid, preproc_runid, config):
     run_id = general.generate_runid() if runid == "" else runid
     output_prefix = os.path.join(config_data["train_prefix"], run_id)
     LOG.info("Output prefix in use: %s", output_prefix)
-    LOG.info("Run_id in use: %s", run_id)
+    LOG.info("Train run_id in use: %s", run_id)
     LOG.info("Preprocessing run_id in use: %s", preproc_runid)
 
     df = load_dataset(config_data, preproc_runid)
@@ -105,7 +115,7 @@ def run(runid, preproc_runid, config):
     LOG.info("Using train mode: Pipelines will be fitted and saved") 
     
     write_list = []
-    model = create_model(config_data)
+    model = create_model()
     model.fit(X_train, y_train)
     predictions = model.predict(X_test) 
     metrics_df = get_metrics(y_test, predictions)
@@ -124,4 +134,4 @@ def run(runid, preproc_runid, config):
                         "csv"))
        
     general.generic_write(write_list)
-    LOG.info("%s Finished Preprocessing %s", "*"*10, "*"*10)
+    LOG.info("%s Finished Training %s", "*"*10, "*"*10)

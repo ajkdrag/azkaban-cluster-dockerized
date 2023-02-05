@@ -28,9 +28,9 @@ def create_pipeline(config_data):
 def load_pipeline(config_data):
     registry_path = config_data["registry_path"]
     registry_df = general.read_csv(registry_path)
-    best_preproc_runid = registry_df.iloc[-1]["preproc_runid"]
+    latest_preproc_runid = registry_df.iloc[-1]["preproc_runid"]
     preproc_artifact_path = os.path.join(config_data["preproc_prefix"],
-                                         best_preproc_runid,
+                                         latest_preproc_runid,
                                          "pipeline.pkl")
     return general.read_pkl(preproc_artifact_path)
     
@@ -41,7 +41,16 @@ def load_dataset(config_data):
     df = general.read_csv(data_path, sep="\t", names=header)
     LOG.info("Loaded %s rows from raw data", len(df))
     return df
-        
+       
+
+def transform(X, pipeline, train=True):
+    transformed = pipeline.fit_transform(X) if train else \
+                    pipeline.transform(X)
+    new_feats = pipeline.named_steps["Vect"].get_feature_names()
+    transformed_df = pd.DataFrame(transformed.toarray(),
+                        columns=new_feats)
+    return transformed_df
+
 
 @click.command()
 @click.option("-r", "--runid", default="", help="Optional run id.")
@@ -64,28 +73,19 @@ def run(runid, config, train):
     write_list = []
     
     sms_col = config_data["sms_col"]
+    X = df[sms_col]
+    pipeline = create_pipeline(config_data) if train \
+                else load_pipeline(config_data)
+    transformed_df = transform(X, pipeline, train)
+    
     if train:
-        X = df[sms_col]
-        LOG.info("Using train mode: Pipelines will be fitted and saved") 
-        pipeline = create_pipeline(config_data)
-        transformed = pipeline.fit_transform(X)
-        new_feats = pipeline.named_steps["Vect"].get_feature_names()
-        transformed_df = pd.DataFrame(transformed.toarray(),
-                            columns=new_feats)
         transformed_df = pd.concat([transformed_df,
-                                    df[[config_data["target_col"]]]], axis=1)
+                                    df[[config_data["target_col"]]]],
+                                    axis=1)
         write_list.append((pipeline,
                            os.path.join(output_prefix, "pipeline.pkl"),
                            "pickle"))
-    else:
-        LOG.info("Using predict mode: Fitted pipelines will be loaded") 
-        pipeline = load_pipeline(config_data)
-        X = df[sms_col]
-        transformed = pipeline.transform(X)
-        new_feats = pipeline.named_steps["Vect"].get_feature_names()
-        transformed_df = pd.DataFrame(transformed.toarray(),
-                            columns=new_feats)
-
+        
     LOG.info("Shape of output: %s", transformed_df.shape)
     write_list.append((transformed_df,
                        os.path.join(output_prefix, "preprocessed.csv"),

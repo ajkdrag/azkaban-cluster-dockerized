@@ -34,7 +34,7 @@ def read_csv(csv_path, **kwargs):
 def read_pkl(pkl_path):
     if pkl_path.startswith("s3"):
         contents = io.BytesIO(s3_utils.stream_file(pkl_path).read())
-        obj = joblib.loads(contents)
+        obj = joblib.load(contents)
     else:
         obj = joblib.load(pkl_path)
     return obj
