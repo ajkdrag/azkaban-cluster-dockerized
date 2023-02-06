@@ -1,0 +1,12 @@
+registry_path: s3://dev/registry.csv
+data_path: s3://dev/data/train/SMSSpamCollection
+preproc_prefix: s3://dev/preprocessing
+train_prefix: s3://dev/train
+header:
+  - label
+  - sms
+sms_col: sms
+target_col: label
+target_mapping:
+  ham: 0
+  spam: 1

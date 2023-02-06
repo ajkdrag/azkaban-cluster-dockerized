@@ -46,7 +46,7 @@ def load_dataset(config_data):
 def transform(X, pipeline, train=True):
     transformed = pipeline.fit_transform(X) if train else \
                     pipeline.transform(X)
-    new_feats = pipeline.named_steps["Vect"].get_feature_names()
+    new_feats = pipeline.named_steps["Vect"].get_feature_names_out()
     transformed_df = pd.DataFrame(transformed.toarray(),
                         columns=new_feats)
     return transformed_df

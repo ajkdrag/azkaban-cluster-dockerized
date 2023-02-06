@@ -18,7 +18,7 @@ start_azk:
 	${compose_up} db web
 clean_build:
 	cd ${dir_code}; \
-	rm -rf *.egg-info dist/
+	rm -rf *.egg-info dist/ build/
 upload_data:
 	set -o allexport; \
 	source .env; \
@@ -39,7 +39,7 @@ upload_code: clean_build
 	pip install --upgrade pip; \
 	pip install -qr requirements.txt; \
 	cd ${dir_code}; \
-	python3 -m build; \
+	python3 -m build --wheel; \
 	twine check dist/*.whl; \
 	twine upload --repository-url http://${pypi_host}:8080 dist/*.whl; \
 	deactivate; \
@@ -48,12 +48,12 @@ run_preproc:
 	set -o allexport; \
 	source .env; \
 	set +o allexport; \
-	spam_preprocessor -c ../mlcode/configs/train_s3.yaml -t
+	spam_preproc -c ../mlcode/configs/train_s3.yaml -t
 run_train:
 	set -o allexport; \
 	source .env; \
 	set +o allexport; \
-	spam_train -p ea7c7324-50a9-4c2d-9026-bbb603b1a5da -c ../mlcode/configs/train_s3.yaml
+	spam_train -p b12bc11f-2056-4e3f-a173-aab6db0177e3  -c ../mlcode/configs/train_s3.yaml
 run_inference:
 	set -o allexport; \
 	source .env; \

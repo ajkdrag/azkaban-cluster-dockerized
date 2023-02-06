@@ -1,7 +1,32 @@
-[build-system]
-requires = [
-	"setuptools>=54",
-	"wheel"
+[project]
+name = "mlcode"
+version = "0.0.1"
+description = "A test ML project to work with Azkaban."
+readme = "README.md"
+requires-python = ">=3.6"
+license = {file = "LICENSE"}
+authors = [
+  {name = "ajkdrag", email = "altamashjahangirkhan123@gmail.com" }
+]
+classifiers = [
+	"Programming Language :: Python :: 3",
+	"License :: OSI Approved :: MIT License",
+	"Operating System :: OS Independent"
+]
+dependencies = [
+	"boto3==1.26",
+    "scikit-learn==1.2.1",
+	"pandas==1.5.3",
+	"pyyaml==6.0",
+	"click==8.1",
+	"joblib==1.2.0"
 ]
 
+[project.scripts]
+spam_preproc = "preprocessing.preprocessor:run"
+spam_train = "training.train:run"
+spam_infer = "inference.infer:run"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"

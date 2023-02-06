@@ -1,0 +1,3 @@
+type=command
+command=bash train.sh ${environ} ${azkaban.flow.uuid}
+dependencies=run_preprocess

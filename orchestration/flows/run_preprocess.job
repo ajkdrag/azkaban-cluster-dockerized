@@ -1,0 +1,2 @@
+type=command
+command=bash preprocess.sh ${environ} ${azkaban.flow.uuid}
