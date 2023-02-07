@@ -98,3 +98,10 @@ There are 2 ways to setup Akaban:
 - [x] End-to-End test with multiple executors
 - [x] Cleanup
 - [x] Update README
+
+## References
+- https://testdriven.io/blog/private-pypi/
+- https://pymbook.readthedocs.io/en/latest/click.html
+- https://azkaban.github.io/azkaban/docs/latest/#ajax-api
+- https://olgabelitskaya.github.io/MLE_ND_PP0.html
+- https://github.com/pypiserver/pypiserver/issues/267
