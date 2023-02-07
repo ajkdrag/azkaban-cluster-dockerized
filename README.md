@@ -1,16 +1,15 @@
 ## Azkaban dockerized recipe
-
-## Usage
 The goal is to have an infra that runs Azkaban and orchestrates a basic ML flow. To demonstrate this, there must be 3 main components:
 - The orchestrator that runs in an isolated environment (preferrably).
 - The codebase itself which will be run through the orchestrator.
 - The DAG that goes as input to the orchestrator.
 
-### Folder structure
+## Folder structure
 - `code`: Basic ML productionized code (our codebase).
 - `services`: The compose file for the services that will be used (our orchestrator).
 - `orchestration`: Azkaban flows and jobs (our DAG definitions).
 
+## Usage
 Have a look at the `services/docker-compose.yml` file. There are 6 services defined:
 - `db`: The MySQL backend, to be used by Azkaban.
 - `web`: The Azkabn web server (depends on `db` service to be healthy).
@@ -96,6 +95,6 @@ There are 2 ways to setup Akaban:
 - [x] Productionized ML code
 - [x] Packaged ML code
 - [x] End-to-End test with 1 executor
-- [ ] End-to-End test with multiple executors
+- [x] End-to-End test with multiple executors
 - [x] Cleanup
 - [x] Update README
